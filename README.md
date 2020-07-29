@@ -53,6 +53,6 @@ https://github.com/fex-team/webuploader
 #### 腾讯云 COS ###
 https://cloud.tencent.com/product/cos
 
-#### 腾讯云 COS J ###
+#### 腾讯云 COS JS SDK ###
 https://github.com/tencentyun/cos-js-sdk-v5
 
