@@ -2,10 +2,6 @@
 
 上传到腾讯云 COS 对象云存储上传控件(仿*百度webuploader*)
 
-# 预览效果图 #
-![gif](./%E9%A2%84%E8%A7%88%E5%9B%BE/cos%E4%B8%8A%E4%BC%A0.gif)
-![gif](./%E9%A2%84%E8%A7%88%E5%9B%BE/cos%E4%B8%8A%E4%BC%A03.png)
-
 # 使用说明 #
 
 ### 1. 首先在 COS 控制台中，开好跨域，(见预览图文件夹中跨域图片)详情见 https://console.cloud.tencent.com/cos5/bucket
