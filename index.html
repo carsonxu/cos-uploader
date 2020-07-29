@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <title>OSS uploader</title>
-  <link rel="stylesheet" href="./css/reset.css" /> 
-  <link rel="stylesheet" href="./css/ossUploadStyle.css" />
+  <link rel="stylesheet" href="./css/reset.css" />
+  <link rel="stylesheet" href="./css/cosUploadStyle.css" />
 </head>
 <body>
-		
+
   <div id="wrapper">
       <div id="container">
           <div id="uploader">
@@ -19,7 +19,7 @@
                       <div class="add-btn" id="chooseFolder" data-type="folder">
                         <a href="javascript:void(0);" class="text">选择文件夹</a>
                       </div>
-                  </div> 
+                  </div>
               </div>
           </div>
           <div id="statusBar" class="statusBar">
@@ -37,7 +37,7 @@
               <div class="start-uploader" style="padding-right:20px; float: right;">
                   <a id="startUpload" href="javascript:void(0);" class="text">开始上传</a>
               </div>
-              <div class="start-uploader" style="padding:0 20px; float: right;margin: 0 10px">
+              <div class="start-uploader" style="padding:0 20px; float: right;margin-right: 10px">
                   <a id="addBtn" href="javascript:void(0);" class="text">继续添加</a>
               </div>
 
@@ -57,8 +57,8 @@
       </form>
   </div>
   <script src="./js/jquery-2.2.4.min.js"></script>
-   <!--  <script src="http://gosspublic.alicdn.com/aliyun-oss-sdk-4.4.4.min.js"></script> --> 
-  <script src="./js/aliyun-oss-sdk.js"></script>
+   <!--  <script src="https://unpkg.com/cos-js-sdk-v5/dist/cos-js-sdk-v5.min.js"></script> -->
+  <script src="./js/cos-js-sdk-v5.min.js"></script>
   <script src="./js/index.js"></script>
 </body>
 </html>

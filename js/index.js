@@ -1,23 +1,18 @@
-/**
- * Created By WiFi ON 2017/11/25 16:31
- * github: https://github.com/WiFiUncle/ossUploader
- */
-
-
 'use strict';
-//(function(w) {
+(function(w) {
 /**
- * 以上四个参数，是从后台获取的。bucket和region可以写在前台，但为了以后方便管理，建议统一从后台获取。
+ * 以上四个参数，是从后台获取的。Bucket 和 Region 可以写在前台，但为了以后方便管理，建议统一从后台获取。
  * 后面两个千万不能写在js中!
  * **/
-  // var bucket = 'wifi-uncle'; //前端做测试上传，先自己写死。工程中，这些找后台拿
-  // var region = 'oss-cn-shenzhen'; //同上
-  // var accessKeyId = '***************'; //同上
-  // var accessKeySecret = '***************'; //同上
-  var bucket = ''; //前端做测试上传，先自己写死。工程中，这些找后台拿
-  var region = 'oss-cn-shenzhen'; //同上
-  var accessKeyId = ''; //同上
-  var accessKeySecret = ''; //
+  // var Bucket = 'test-1250000000'; //前端做测试上传，先自己写死。工程中，这些找后台拿
+  // var Region = 'ap-guangzhou'; //同上
+  // var SecretId = '***************'; //同上
+  // var SecretKey = '***************'; //同上
+  var Bucket = 'test-1250000000'; //前端做测试上传，先自己写死。工程中，这些找后台拿
+  var Region = 'ap-guangzhou'; //同上
+  var SecretId = 'xxx'; //同上
+  var SecretKey = 'xxx'; //
+
   /**
   *  上传文件对象
   *  fileStats: 文件统计
@@ -34,23 +29,15 @@
       },
       filePath: "modelData/"
   }; //上传实例对象
-  var Buffer = OSS.Buffer;
-  var OSS = OSS.Wrapper;
-  var STS = OSS.STS;
 
   //新建一个client
-  //前端自己上传到oss，不经过后台拿相关信息。只做测试，工程中不能这样！
-  var client = new OSS({
-    region: region,
-    accessKeyId: accessKeyId,
-    accessKeySecret: accessKeySecret,
-    bucket: bucket,
-    secure: true, //要是项目是走https协议的，需要加上。  具体看下面贴的几个链接
+  //前端自己上传到 COS，不经过后台拿相关信息。只做测试，工程中不能这样！
+  var client = new COS({
+    SecretId: SecretId,
+    SecretKey: SecretKey,
   });
-  // https://help.aliyun.com/document_detail/63401.html?#h3--https-
-  //https 上传
-  // https://bbs.aliyun.com/read/282088.html
-  //client.options.endpoint.protocol = "https:" 
+  // https://cloud.tencent.com/document/product/436/11459
+  //client.options.Protocol = "https:"
   var progressBar = 0;
   var progress = '';
   var $wrap = $('#uploader'),
@@ -59,28 +46,33 @@
       $totalProgressbar = $("#totalProgressBar");
   var FOLDER = 'folder';
   var uploadType = '';//上传类型
-/**
- * 方法二:
- * 实际生产中，用这个。
- * 先往后台获取授权，再生成client
- */
-
-/*var applyTokenDo = function (func) {
-    var url = appServer;// 请求后台获取授权地址url
-    return $.ajax({
-      url: url
-    }).then(function (result) {
-      var creds = result;
-      var client = new OSS({
-        region: region,
-        accessKeyId: creds.AccessKeyId,
-        accessKeySecret: creds.AccessKeySecret,
-        stsToken: creds.SecurityToken,
-        bucket: bucket
-      });
-      return func(client);
+  /**
+   * 方法二:
+   * 实际生产中，用这个。
+   * 生成client，每次需要密钥向后台获取
+   */
+  /*
+  var applyTokenDo = function () {
+    var client = new COS({
+      getAuthorization: function (options, callback) {
+        // 异步获取临时密钥
+        $.get('http://example.com/server/sts.php', function (data) {
+            var credentials = data && data.credentials;
+            if (!data || !credentials) return console.error('credentials invalid');
+            callback({
+                TmpSecretId: credentials.tmpSecretId,
+                TmpSecretKey: credentials.tmpSecretKey,
+                XCosSecurityToken: credentials.sessionToken,
+                // 建议返回服务器时间作为签名的开始时间，避免用户浏览器本地时间偏差过大导致签名错误
+                StartTime: data.startTime, // 时间戳，单位秒，如：1580000000
+                ExpiredTime: data.expiredTime, // 时间戳，单位秒，如：1580000900
+            });
+        });
+      }
     });
-  };*/
+    return client;
+  };
+  */
   /**
    *  前端自己测试用，
    *  不用请求后台授权，直接写死数据。
@@ -89,7 +81,7 @@
     return client;
   };
   var progress = function (p) { //p百分比 0~1
-    return function (done) { 
+    return function (done) {
       progressBar = (p * 100).toFixed(2) + '%';
       $totalProgressbar.css('width', progressBar)
                       .html(progressBar);
@@ -112,15 +104,16 @@
     var object = 'obj/1.jpg'; //测试数据，自行删除
     var filename = '1.jpg'; //测试数据，自行删除
     console.log(object + ' => ' + filename);
-    var result = client.signatureUrl(object, {
-      response: { //这里为啥会有response，具体看官方文档。
-        'content-disposition': 'attachment; filename="' + filename + '"'
-      }
+    var url = client.getObjectUrl({
+        Bucket: Bucket,
+        Region: Region,
+        Key: filename,
     });
-    window.location = result; //这里是直接下载文件
-    return result; //返回url
+    url += '&response-content-disposition=attachment; filename="' + filename + '"';
+    window.location = url; //这里是直接下载文件
+    return url; //返回url
   };
-  function OssUpload() {
+  function CosUploader() {
     var _this = this;
     _this.init = function () {
       _this.initPage();
@@ -130,8 +123,8 @@
       $("#statusBar").hide();
     };
   }
-  OssUpload.prototype = {
-      constructor: OssUpload,
+  CosUploader.prototype = {
+      constructor: CosUploader,
       // 绑定事件
       bindEvent: function () {
           var _this = this;
@@ -185,7 +178,7 @@
             }
             $li.remove();
           });
-      },      
+      },
       /**
        * 获取文件所在文件夹名
        *
@@ -207,7 +200,7 @@
        *  上传文件
        * @param file 需要上传的文件
        * @param filePath 上传文件到哪个位置。按官方说法就是key
-       * oss是对象存储, 没有path路径概念，不过个人认为这个可以当作路径比较好理解
+       * COS 是对象存储, 没有path路径概念，不过个人认为这个可以当作路径比较好理解
        */
     uploadFile: function (file, filePath) {
       var client;
@@ -218,10 +211,15 @@
           filePath = filePath + this.getParentDirName(file) + file.name;
       }
       client = applyTokenDo();
-          client.multipartUpload(filePath, file, {
-            progress: progress
-          })
-          .then(function (res) {
+          client.putObject({
+              Bucket: Bucket,
+              Region: Region,
+              Key: filePath,
+              Body: file,
+              onProgress: function (info) {
+                  progress(info.percent);
+              },
+          }, function (err, res) {
             $("#" + file.id).children(".success-span").addClass("success");
             uploader.fileStats.uploadFinishedFilesNum ++; //已成功上传数 + 1/
             uploader.fileStats.curFileSize += file.size; //当前已上传的文件大小
@@ -279,16 +277,16 @@
       $li.appendTo( $queue );
     },
   }
-  //w.OssUpload = OssUpload;
-//})(window)
-var ossUpload = '';
-$(function() {
-  ossUpload = new OssUpload();
-  ossUpload.init();
-  $("#dl-button").click(function() {
-    downloadFile();
+  w.CosUploader = CosUploader;
+  var cosUpload = '';
+  $(function() {
+      cosUpload = new CosUploader();
+      cosUpload.init();
+      $("#dl-button").click(function() {
+          downloadFile();
+      });
   });
-});
+})(window)
 
 
 

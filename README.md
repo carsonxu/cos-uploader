@@ -1,34 +1,43 @@
+# CosUploader #
 
-# ossUploader #
-阿里云OSS 对象云存储上传控件(仿*百度webuploader*) 
+上传到腾讯云 COS 对象云存储上传控件(仿*百度webuploader*)
+
 # 预览效果图 #
-![gif](https://github.com/WiFiUncle/ossUploader/blob/master/%E9%A2%84%E8%A7%88%E5%9B%BE/oss%E4%B8%8A%E4%BC%A0.gif)
-![gif](https://github.com/WiFiUncle/ossUploader/blob/master/%E9%A2%84%E8%A7%88%E5%9B%BE/oss%E4%B8%8A%E4%BC%A03.png)
+![gif](./%E9%A2%84%E8%A7%88%E5%9B%BE/cos%E4%B8%8A%E4%BC%A0.gif)
+![gif](./%E9%A2%84%E8%A7%88%E5%9B%BE/cos%E4%B8%8A%E4%BC%A03.png)
 
 # 使用说明 #
-### 1. 首先在oss控制台中，开好跨域，(见预览图文件夹中跨域图片)详情见https://help.aliyun.com/document_detail/31870.html?spm=5176.8466029.cors-info-block.1.2ef2e958WLFFqQ
+
+### 1. 首先在 COS 控制台中，开好跨域，(见预览图文件夹中跨域图片)详情见 https://console.cloud.tencent.com/cos5/bucket
 ### 2. 本工程需要启动服务，不能直接file://这样子访问！！！！
 ### 3. 找后台要获取配置信息的接口，
    ```
-   var applyTokenDo = function (func) {
-       var url = appServer;// 请求后台获取授权地址url
-       return $.ajax({
-         url: url
-       }).then(function (result) {
-         var creds = result; //拿到相关信息，新建个client
-         var client = new OSS({
-           region: region,
-           accessKeyId: creds.AccessKeyId,
-           accessKeySecret: creds.AccessKeySecret,
-           stsToken: creds.SecurityToken,
-           bucket: bucket
+   var applyTokenDo = function () {
+     var client = new COS({
+       getAuthorization: function (options, callback) {
+         // 异步获取临时密钥
+         $.get('http://example.com/server/sts.php', {
+             bucket: options.Bucket,
+             region: options.Region,
+         }, function (data) {
+             var credentials = data && data.credentials;
+             if (!data || !credentials) return console.error('credentials invalid');
+             callback({
+                 TmpSecretId: credentials.tmpSecretId,
+                 TmpSecretKey: credentials.tmpSecretKey,
+                 XCosSecurityToken: credentials.sessionToken,
+                 // 建议返回服务器时间作为签名的开始时间，避免用户浏览器本地时间偏差过大导致签名错误
+                 StartTime: data.startTime, // 时间戳，单位秒，如：1580000000
+                 ExpiredTime: data.expiredTime, // 时间戳，单位秒，如：1580000900
+             });
          });
-         return func(client);
-       });
-     };
+       }
+     });
+     return client;
+   };
    ```
    若暂无后台，前端自己调测上传功能，则见4，
-### 4. 在代码中配置好bucket、region、accessKeyId、accessKeySecret。(仅限前端自己做测试)，
+### 4. 在代码中配置好 bucket、region、accessKeyId、accessKeySecret。(仅限前端自己做测试)，
 ### 然后就可以上传啦！！
 
 
@@ -36,17 +45,14 @@
 - [x] 上传多个文件
 - [x] 继续添加功能
 - [x] 图片预览
-- [ ] 文件MD5值计算
-- [ ] ···
 
 
 ### 百度 webuploader ### 
 https://github.com/fex-team/webuploader
 
-#### 阿里云oss ### 
-https://github.com/ali-sdk/ali-oss
+#### 腾讯云 COS ###
+https://cloud.tencent.com/product/cos
 
-github地址: https://github.com/WiFiUncle/ossUploader
-群名称：ossUploader
-群   号：516425821
+#### 腾讯云 COS J ###
+https://github.com/tencentyun/cos-js-sdk-v5
 
