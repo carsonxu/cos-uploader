@@ -3,8 +3,7 @@
 上传到腾讯云 COS 对象云存储上传控件(仿*百度webuploader*)
 
 # 预览效果图 #
-![gif](./%E9%A2%84%E8%A7%88%E5%9B%BE/cos%E4%B8%8A%E4%BC%A0.gif)
-![gif](./%E9%A2%84%E8%A7%88%E5%9B%BE/cos%E4%B8%8A%E4%BC%A03.png)
+![预览图](./images/preview.png)
 
 # 使用说明 #
 
